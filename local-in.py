@@ -6,8 +6,6 @@ import sys
 import ssl
 import requests
 import logging
-import datetime
-import time
 
 ssl._create_default_https_context = ssl._create_unverified_context
 requests.packages.urllib3.disable_warnings() 
