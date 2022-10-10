@@ -16,6 +16,8 @@ def main():
     extint = input(str('Please input external port name or zone name(ie. port1 or WAN_zone): '))
     password = input(str('Please input API key: '))
     
+    adminport = ports(fortigate, password)
+
     devices = []
     with open(os.path.join(sys.path[0],'mgmt-ip.csv'), 'r') as vars_:
         for line in csv.DictReader(vars_):
@@ -94,8 +96,8 @@ def main():
             ],
             'action': 'accept',
             'service': [
-                {'name': 'HTTP'},
-                {'name': 'HTTPS'}
+                {'name': adminport[0]},
+                {'name': adminport[1]}
             ],
             'schedule': 'always',
             'status': 'enable'
@@ -130,8 +132,8 @@ def main():
             ],
             'action': 'deny',
             'service': [
-                {'name': 'HTTP'},
-                {'name': 'HTTPS'}
+                {'name': adminport[0]},
+                {'name': adminport[1]}
             ],
             'schedule': 'always',
             'status': 'enable'
@@ -146,6 +148,125 @@ def main():
 
     except:
         logging.error('Unable to connect to Firewall')
+
+def ports(fortigate, password):
+    try:
+        address_url = 'https://%s/api/v2/cmdb/system/global' % fortigate
+        headers = {
+            'Authorization': 'Bearer' + password, 
+            'content-type': 'application/json'
+            }
+
+        admports = requests.get(address_url, headers=headers, verify=False)
+
+        httpport = admports.json()['results']['admin-port']
+        httpsport = admports.json()['results']['admin-sport']
+
+        portlist = []
+        if httpport == 80:
+            portlist.append('HTTP')
+        else:
+            try:
+                address_url = 'https://%s/api/v2/cmdb/firewall.service/custom' % fortigate
+                headers = {
+                    'Authorization': 'Bearer' + password, 
+                    'content-type': 'application/json'
+                    }
+
+                data = {
+                    "name": "mgmt-http-port",
+                    "proxy": "enable",
+                    "category": "General",
+                    "protocol": "TCP/UDP/SCTP",
+                    "protocol-number": 254,
+                    "icmptype": 4294967295,
+                    "icmpcode": 255,
+                    "helper": "auto",
+                    "iprange": "",
+                    "fqdn": "",
+                    "tcp-portrange": "%s" % httpport,
+                    "udp-portrange": "",
+                    "sctp-portrange": "",
+                    "tcp-halfclose-timer": 0,
+                    "tcp-halfopen-timer": 0,
+                    "tcp-timewait-timer": 0,
+                    "tcp-rst-timer": 0,
+                    "udp-idle-timer": 0,
+                    "session-ttl": "",
+                    "check-reset-range": "disable",
+                    "comment": "",
+                    "color": 0,
+                    "visibility": "enable",
+                    "app-service-type": "disable",
+                    "app-category": [],
+                    "application": [],
+                    "fabric-object": "disable"
+                }
+
+                mgmthttp = requests.post(address_url, headers=headers, json=data, verify=False)  
+
+                if mgmthttp.status_code == 200:
+                    portlist.append('mgmt-http-port')
+                else:
+                    raise Exception('Failed to add custom service')
+            
+            except:
+                logging.error('Failed to add custom service for HTTP port')
+
+        if httpsport == 443:
+            portlist.append('HTTPS')
+        else:
+            try:
+                address_url = 'https://%s/api/v2/cmdb/firewall.service/custom' % fortigate
+                headers = {
+                    'Authorization': 'Bearer' + password, 
+                    'content-type': 'application/json'
+                    }
+
+                data = {
+                    "name": "mgmt-https-port",
+                    "proxy": "enable",
+                    "category": "General",
+                    "protocol": "TCP/UDP/SCTP",
+                    "protocol-number": 254,
+                    "icmptype": 4294967295,
+                    "icmpcode": 255,
+                    "helper": "auto",
+                    "iprange": "",
+                    "fqdn": "",
+                    "tcp-portrange": "%s" % httpsport,
+                    "udp-portrange": "",
+                    "sctp-portrange": "",
+                    "tcp-halfclose-timer": 0,
+                    "tcp-halfopen-timer": 0,
+                    "tcp-timewait-timer": 0,
+                    "tcp-rst-timer": 0,
+                    "udp-idle-timer": 0,
+                    "session-ttl": "",
+                    "check-reset-range": "disable",
+                    "comment": "",
+                    "color": 0,
+                    "visibility": "enable",
+                    "app-service-type": "disable",
+                    "app-category": [],
+                    "application": [],
+                    "fabric-object": "disable"
+                }
+
+                mgmthttps = requests.post(address_url, headers=headers, json=data, verify=False)  
+                
+                if mgmthttps.status_code == 200:
+                    portlist.append('mgmt-https-port')
+                else:
+                    raise Exception('Failed to add custom service')
+            
+            except:
+                logging.error('Failed to add custom service for HTTPS port')
+
+        return portlist
+
+    except:
+        logging.error('Unable to get admin ports.')
 
 if __name__ == '__main__':
    main()
