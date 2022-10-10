@@ -175,32 +175,13 @@ def ports(fortigate, password):
 
                 data = {
                     "name": "mgmt-http-port",
-                    "proxy": "enable",
                     "category": "General",
                     "protocol": "TCP/UDP/SCTP",
-                    "protocol-number": 254,
-                    "icmptype": 4294967295,
-                    "icmpcode": 255,
-                    "helper": "auto",
-                    "iprange": "",
-                    "fqdn": "",
+                    "protocol-number": 6,
                     "tcp-portrange": "%s" % httpport,
-                    "udp-portrange": "",
-                    "sctp-portrange": "",
-                    "tcp-halfclose-timer": 0,
-                    "tcp-halfopen-timer": 0,
-                    "tcp-timewait-timer": 0,
-                    "tcp-rst-timer": 0,
-                    "udp-idle-timer": 0,
-                    "session-ttl": "",
-                    "check-reset-range": "disable",
                     "comment": "",
                     "color": 0,
                     "visibility": "enable",
-                    "app-service-type": "disable",
-                    "app-category": [],
-                    "application": [],
-                    "fabric-object": "disable"
                 }
 
                 mgmthttp = requests.post(address_url, headers=headers, json=data, verify=False)  
@@ -225,32 +206,13 @@ def ports(fortigate, password):
 
                 data = {
                     "name": "mgmt-https-port",
-                    "proxy": "enable",
                     "category": "General",
                     "protocol": "TCP/UDP/SCTP",
-                    "protocol-number": 254,
-                    "icmptype": 4294967295,
-                    "icmpcode": 255,
-                    "helper": "auto",
-                    "iprange": "",
-                    "fqdn": "",
+                    "protocol-number": 6,
                     "tcp-portrange": "%s" % httpsport,
-                    "udp-portrange": "",
-                    "sctp-portrange": "",
-                    "tcp-halfclose-timer": 0,
-                    "tcp-halfopen-timer": 0,
-                    "tcp-timewait-timer": 0,
-                    "tcp-rst-timer": 0,
-                    "udp-idle-timer": 0,
-                    "session-ttl": "",
-                    "check-reset-range": "disable",
                     "comment": "",
                     "color": 0,
                     "visibility": "enable",
-                    "app-service-type": "disable",
-                    "app-category": [],
-                    "application": [],
-                    "fabric-object": "disable"
                 }
 
                 mgmthttps = requests.post(address_url, headers=headers, json=data, verify=False)  
