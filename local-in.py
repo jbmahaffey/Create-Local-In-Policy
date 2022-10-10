@@ -26,7 +26,7 @@ def main():
 
     # Add address objects based on csv file
     try:
-        address_url = 'https://%s/api/v2/cmdb/firewall/address' % fortigate
+        address_url = 'https://{}/api/v2/cmdb/firewall/address'.format(fortigate)
         headers = {
             'Authorization': 'Bearer' + password, 
             'content-type': 'application/json'
@@ -34,27 +34,27 @@ def main():
 
         for addr in mgip['all']:
             data = {
-                'name': 'mgmt-ip-%s' % addr['mgmt-ip'],
+                'name': 'mgmt-ip-{}'.format(addr['mgmt-ip']),
                 'type': 'ipmask',
                 'subnet': addr['mgmt-ip'],
                 'allow-routing': 'enable'
             }
             addresses = requests.post(address_url, headers=headers, json=data, verify=False)
             if addresses.status_code == 200:
-                logging.info('Address %s added' % data['name'])
+                logging.info('Address {} added'.format(data['name']))
             else:
-                logging.error('Unable to add address %s' % data['name'])
+                logging.error('Unable to add address {}'.format(data['name']))
         
     except:
         logging.error('Unable to connect to Firewall')
 
     addgrp = []
     for addr in mgip['all']:
-        addgrp.append({'name': 'mgmt-ip-%s' % addr['mgmt-ip']})
+        addgrp.append({'name': 'mgmt-ip-{}'.format(addr['mgmt-ip'])})
 
     # create address group based on address objects in csv
     try:
-        address_url = 'https://%s/api/v2/cmdb/firewall/addrgrp' % fortigate
+        address_url = 'https://{}/api/v2/cmdb/firewall/addrgrp'.format(fortigate)
         headers = {
             'Authorization': 'Bearer' + password, 
             'content-type': 'application/json'
@@ -79,7 +79,7 @@ def main():
 
     # Create local-in policy to allow address group
     try:
-        address_url = 'https://%s/api/v2/cmdb/firewall/local-in-policy' % fortigate
+        address_url = 'https://{}/api/v2/cmdb/firewall/local-in-policy'.format(fortigate)
         headers = {
             'Authorization': 'Bearer' + password, 
             'content-type': 'application/json'
@@ -115,7 +115,7 @@ def main():
 
     # Create local-in policy to allow address group
     try:
-        address_url = 'https://%s/api/v2/cmdb/firewall/local-in-policy' % fortigate
+        address_url = 'https://{}/api/v2/cmdb/firewall/local-in-policy'.format(fortigate)
         headers = {
             'Authorization': 'Bearer' + password, 
             'content-type': 'application/json'
@@ -151,7 +151,7 @@ def main():
 
 def ports(fortigate, password):
     try:
-        address_url = 'https://%s/api/v2/cmdb/system/global' % fortigate
+        address_url = 'https://{}/api/v2/cmdb/system/global'.format(fortigate)
         headers = {
             'Authorization': 'Bearer' + password, 
             'content-type': 'application/json'
@@ -167,7 +167,7 @@ def ports(fortigate, password):
             portlist.append('HTTP')
         else:
             try:
-                address_url = 'https://%s/api/v2/cmdb/firewall.service/custom' % fortigate
+                address_url = 'https://{}/api/v2/cmdb/firewall.service/custom'.format(fortigate)
                 headers = {
                     'Authorization': 'Bearer' + password, 
                     'content-type': 'application/json'
@@ -178,7 +178,7 @@ def ports(fortigate, password):
                     "category": "General",
                     "protocol": "TCP/UDP/SCTP",
                     "protocol-number": 6,
-                    "tcp-portrange": "%s" % httpport,
+                    "tcp-portrange": "{}".format(httpport),
                     "comment": "",
                     "color": 0,
                     "visibility": "enable",
@@ -198,7 +198,7 @@ def ports(fortigate, password):
             portlist.append('HTTPS')
         else:
             try:
-                address_url = 'https://%s/api/v2/cmdb/firewall.service/custom' % fortigate
+                address_url = 'https://{}/api/v2/cmdb/firewall.service/custom'.format(fortigate)
                 headers = {
                     'Authorization': 'Bearer' + password, 
                     'content-type': 'application/json'
@@ -209,7 +209,7 @@ def ports(fortigate, password):
                     "category": "General",
                     "protocol": "TCP/UDP/SCTP",
                     "protocol-number": 6,
-                    "tcp-portrange": "%s" % httpsport,
+                    "tcp-portrange": "{}".format(httpsport),
                     "comment": "",
                     "color": 0,
                     "visibility": "enable",
