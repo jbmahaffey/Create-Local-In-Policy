@@ -89,10 +89,10 @@ def main():
             'policyid': 100,
             'intf': '%s' % extint,
             'srcaddr': [
-                {'name': 'all'}
+                {'name': 'mgmt-ip-group'}
             ],
             'dstaddr': [
-                {'name': 'mgmt-ip-group'}
+                {'name': 'all'}
             ],
             'action': 'accept',
             'service': [
